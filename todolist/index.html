@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#597ef7"><meta name="author" content="不换"><meta name="copyright" content="不换"><meta name="generator" content="Hexo 6.1.0"><meta name="theme" content="hexo-theme-yun"><title>待办清单 | 不换的小窝</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.2.4/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link class="aplayer-style-marker" rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script class="aplayer-script-marker" src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" defer></script><script class="meting-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js" defer></script><script src="/js/pjax.js" defer type="module"></script><script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script><link rel="icon" type="image/png" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/favicon.png"><link rel="mask-icon" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/favicon.png" color="#597ef7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"dev.bigdreamer.cc","root":"/","title":"不换的小窝","version":"1.10.4","mode":"auto","copycode":true,"page":{"isPost":false},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"local_search":{"path":"/search.xml"},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":null},"waline":{"config":{"enable":true,"serverURL":"https://waline.bigdreamer.cc","comment":true,"visitor":true,"avatar":"https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/static/16393598091743192.jpeg?x-oss-process=style/HANDLE_IMAGE","el":"#waline","lang":"zh-CN"},"cdn":"https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"darken":"https://cdn.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"><meta name="description" content="随着生活和工作的节奏越来越快，每天的琐事也越来越多，我想做的事也越来越多，但是总会被无情的打断，以至于最后就不了了之。。。。。。所以我准备记录一下。         👨🏻‍💻想读的书纸质书                   👨🏻‍🏫想输出的精读系列  精读《React技术揭秘》上  精读《React技术揭秘》中 卷一  精读《React技术揭秘》中 卷二  精读《React技术揭秘">
+<meta property="og:type" content="website">
+<meta property="og:title" content="待办清单">
+<meta property="og:url" content="https://dev.bigdreamer.cc/todolist/index.html">
+<meta property="og:site_name" content="不换的小窝">
+<meta property="og:description" content="随着生活和工作的节奏越来越快，每天的琐事也越来越多，我想做的事也越来越多，但是总会被无情的打断，以至于最后就不了了之。。。。。。所以我准备记录一下。         👨🏻‍💻想读的书纸质书                   👨🏻‍🏫想输出的精读系列  精读《React技术揭秘》上  精读《React技术揭秘》中 卷一  精读《React技术揭秘》中 卷二  精读《React技术揭秘">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/todolist/ahasuanfa.png?x-oss-process=style/HANDLE_IMAGE">
+<meta property="og:image" content="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/todolist/31ESaI1TPcL.jpeg?x-oss-process=style/HANDLE_IMAGE">
+<meta property="og:image" content="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/todolist/JavaScript%E9%AB%98%E7%BA%A7%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%EF%BC%88%E7%AC%AC4%E7%89%88%EF%BC%89_%E5%B0%81%E4%B8%80.jpeg?x-oss-process=style/HANDLE_IMAGE">
+<meta property="article:published_time" content="2022-07-03T19:11:58.000Z">
+<meta property="article:modified_time" content="2022-07-24T12:21:04.620Z">
+<meta property="article:author" content="不换">
+<meta property="article:tag" content="不换">
+<meta property="article:tag" content="小窝">
+<meta property="article:tag" content="博客">
+<meta property="article:tag" content="生活">
+<meta property="article:tag" content="不换的小窝">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/todolist/ahasuanfa.png?x-oss-process=style/HANDLE_IMAGE"><script>(function() {
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div class="sidebar-panel sidebar-panel-active" id="site-overview-wrap"><div class="site-info"><a class="site-author-avatar" href="/about/" title="不换"><img width="96" loading="lazy" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/static/16393598091743192.jpeg?x-oss-process=style/HANDLE_IMAGE" alt="不换"><span class="site-author-status" title="心若向阳，无惧悲伤">🐯</span></a><div class="site-author-name"><a href="/about/">不换</a></div><a class="site-name" href="/about/site.html">不换的小窝</a><sub class="site-subtitle"></sub><div class="site-description"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">3</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">5</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://www.bigdreamer.cc" title="Home"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:rocket-2-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="http://wpa.qq.com/msgrd?v=3&amp;uin=1826001146&amp;site=qq&amp;menu=yes" title="QQ 1826001146" target="_blank" style="color:#12B7F5"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-qq-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/bigbigDreamer" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:jadeface.scholar@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a><a class="links-item hty-icon-button" href="/girls/" title="我的后宫" style="color:hotpink"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-women-line"></use></svg></a><a class="links-item hty-icon-button" href="/copyright/" title="版权（免责）声明" style="color:null"><span class="icon iconify" data-icon="ri:copyright-line"></span></a><a class="links-item hty-icon-button" href="/todolist/" title="Todo List" style="color:null"><span class="icon iconify" data-icon="ri:calendar-todo-line"></span></a><a class="links-item hty-icon-button" target="_blank" rel="noopener" href="https://whoami.bigdreamer.cc" title="关于我的里程碑" style="color:null"><span class="icon iconify" data-icon="ri:mickey-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="tag-cloud"><div class="tag-cloud-tags"><a href="/tags/Antd/" style="font-size: 12px; color: #999">Antd</a> <a href="/tags/React/" style="font-size: 30px; color: #0078e7">React</a> <a href="/tags/%E6%80%9D%E8%80%83/" style="font-size: 12px; color: #999">思考</a> <a href="/tags/%E7%BB%84%E4%BB%B6%E5%BA%93/" style="font-size: 12px; color: #999">组件库</a> <a href="/tags/%E9%9A%8F%E6%83%B3/" style="font-size: 12px; color: #999">随想</a></div></div></aside><main class="sidebar-translate" id="content"><div class="hty-card" id="page"><header class="post-header"><h1 class="post-title" itemprop="name headline">待办清单</h1></header><div class="text-center"><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-07-03 19:11:58" itemprop="dateCreated datePublished" datetime="2022-07-03T19:11:58+00:00">2022-07-03</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-2-line"></span></span> <time title="修改时间：2022-07-24 12:21:04" itemprop="dateModified" datetime="2022-07-24T12:21:04+00:00">2022-07-24</time></div></div></div><article id="page"><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+<p>随着生活和工作的节奏越来越快，每天的琐事也越来越多，我想做的事也越来越多，但是总会被无情的打断，以至于最后就不了了之。。。。。。所以我准备记录一下。</p>
+</blockquote>
+
+    <div id="aplayer-qaeWWGRy" class="aplayer aplayer-tag-marker meting-tag-marker"
+         data-id="1819828419" data-server="netease" data-type="song" data-mode="circulation" data-autoplay="false" data-mutex="true" data-listmaxheight="340px" data-preload="auto" data-theme="#C20C0C"
+    ></div>
+
+<h4 id="👨🏻‍💻想读的书"><a href="#👨🏻‍💻想读的书" class="headerlink" title="👨🏻‍💻想读的书"></a>👨🏻‍💻想读的书</h4><p><strong>纸质书</strong></p>
+<p style="display: flex">
+    <img style="margin: 10px 16px" width="160" height="220" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/todolist/ahasuanfa.png?x-oss-process=style/HANDLE_IMAGE" loading="lazy">
+    <img style="margin: 10px 16px" width="160" height="220" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/todolist/31ESaI1TPcL.jpeg?x-oss-process=style/HANDLE_IMAGE" loading="lazy">
+    <img style="margin: 10px 16px" width="160" height="220" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/todolist/JavaScript%E9%AB%98%E7%BA%A7%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%EF%BC%88%E7%AC%AC4%E7%89%88%EF%BC%89_%E5%B0%81%E4%B8%80.jpeg?x-oss-process=style/HANDLE_IMAGE" loading="lazy">
+</p>
+
+<h4 id="👨🏻‍🏫想输出的精读系列"><a href="#👨🏻‍🏫想输出的精读系列" class="headerlink" title="👨🏻‍🏫想输出的精读系列"></a>👨🏻‍🏫想输出的精读系列</h4><ul>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://dev.bigdreamer.cc/precision-react-demystified1/">精读《React技术揭秘》上</a></li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://dev.bigdreamer.cc/precision-react-demystified2/">精读《React技术揭秘》中 卷一</a></li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://dev.bigdreamer.cc/precision-react-demystified2-2/">精读《React技术揭秘》中 卷二</a></li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://dev.bigdreamer.cc/precision-react-demystified2-3/?t=1657212746837">精读《React技术揭秘》中 卷三</a></li>
+<li><input disabled="" type="checkbox"> <a href="">精读《React技术揭秘》下 卷一</a></li>
+<li><input disabled="" type="checkbox"> <a href="">精读《React技术揭秘》下 卷二</a></li>
+<li><input disabled="" type="checkbox"> <a href="">精读《React技术揭秘》心得</a> </li>
+<li><input disabled="" type="checkbox"> <a href="">精读 <code>Just JavaScript</code> </a><ul>
+<li>导读 <a target="_blank" rel="noopener" href="https://sudongyuer.github.io/javascript-mental-models/">JavaScript 心智模型</a></li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> <a href="">精读<code>eslint</code>通关小册</a><ul>
+<li>导读 <a target="_blank" rel="noopener" href="https://sudongyuer.github.io/learn-eslint/">ESLint 通关小册</a></li>
+</ul>
+</li>
+</ul>
+<h4 id="🙋🏻想写的文章"><a href="#🙋🏻想写的文章" class="headerlink" title="🙋🏻想写的文章"></a>🙋🏻想写的文章</h4><ul>
+<li><input disabled="" type="checkbox"> <a href=""><code>pnpm</code> &amp; <code>changeset</code> 替换 <code>lerna</code> 最佳实践</a></li>
+<li><input disabled="" type="checkbox"> <a href=""><code>hexo</code> 搭建博客最佳实践</a></li>
+<li><input disabled="" type="checkbox"> <a href=""><code>React Hooks</code> 最佳实践</a></li>
+<li><input disabled="" type="checkbox"> [<code>ebuild</code> &amp; <code>swc</code> 替补<code>webpack</code>]</li>
+<li><input disabled="" type="checkbox"> [<code>vercel</code> 部署 <code>valine</code> 踩坑记]</li>
+<li><input disabled="" type="checkbox"> [<code>vercel</code> 部署 <code>nest swagger</code> 踩坑记]</li>
+</ul>
+<h4 id="🧛🏼‍♂️想做的事"><a href="#🧛🏼‍♂️想做的事" class="headerlink" title="🧛🏼‍♂️想做的事"></a>🧛🏼‍♂️想做的事</h4><ul>
+<li><input disabled="" type="checkbox"> <a href="">刷 <code>LeetCode</code></a></li>
+<li><input disabled="" type="checkbox"> <a href="">搞懂 <code>Http</code></a></li>
+<li><input disabled="" type="checkbox"> <a href=""><code>TS</code> 类型体操大师</a></li>
+<li><input disabled="" type="checkbox"> <a href="">产出一些有意思的库</a></li>
+<li><input disabled="" type="checkbox"> <a href="">做一个时间节点里程碑</a></li>
+<li><input disabled="" type="checkbox"> <a href="">做一个日记短记的页面</a></li>
+<li><input disabled="" type="checkbox"> <a href="">封装 <code>waline</code> 的 <code>React</code> 组件</a><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/walinejs/waline/discussions/1045">启示录</a></li>
+</ul>
+</li>
+</ul>
+</div></section></article></div><div class="hty-card" id="comment"><div id="waline"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/todolist/index.html"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> 不换</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2022-04-10T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#597ef7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><div class="aplayer no-destroy" id="aplayer" data-id="308168565" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay data-theme="#597ef7" data-loop="all" data-order="list" data-preload="auto" data-volume="0.7" data-mutex data-lrctype="0" data-listmaxheight="340px" data-storagename="metingjs"></div><script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"https://cdn.jsdelivr.net/npm/live2d-widget-model-wanko@1.0.5/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":null,"log":false});</script></body></html>

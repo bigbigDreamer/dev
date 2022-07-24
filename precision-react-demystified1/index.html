@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#597ef7"><meta name="author" content="不换"><meta name="copyright" content="不换"><meta name="generator" content="Hexo 6.1.0"><meta name="theme" content="hexo-theme-yun"><title>精读《React技术揭秘》上 | 不换的小窝</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.2.4/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link class="aplayer-style-marker" rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script class="aplayer-script-marker" src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" defer></script><script class="meting-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js" defer></script><script src="/js/pjax.js" defer type="module"></script><script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script><link rel="icon" type="image/png" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/favicon.png"><link rel="mask-icon" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/favicon.png" color="#597ef7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"dev.bigdreamer.cc","root":"/","title":"不换的小窝","version":"1.10.4","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"local_search":{"path":"/search.xml"},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":null},"waline":{"config":{"enable":true,"serverURL":"https://waline.bigdreamer.cc","comment":true,"visitor":true,"avatar":"https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/static/16393598091743192.jpeg?x-oss-process=style/HANDLE_IMAGE","el":"#waline","lang":"zh-CN"},"cdn":"https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"darken":"https://cdn.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"><meta name="description" content="书籍传送门：React技术揭秘——卡颂  前言：整篇文章，我都将以问题+笔记的形式作为精读的导语展开叙述～文末有彩蛋喔～～～">
+<meta property="og:type" content="article">
+<meta property="og:title" content="精读《React技术揭秘》上">
+<meta property="og:url" content="https://dev.bigdreamer.cc/precision-react-demystified1/index.html">
+<meta property="og:site_name" content="不换的小窝">
+<meta property="og:description" content="书籍传送门：React技术揭秘——卡颂  前言：整篇文章，我都将以问题+笔记的形式作为精读的导语展开叙述～文末有彩蛋喔～～～">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/2022/05/React-guess-2.jpg">
+<meta property="og:image" content="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/2022/05/React-guess-3.jpg">
+<meta property="article:published_time" content="2022-05-30T00:09:04.000Z">
+<meta property="article:modified_time" content="2022-07-24T12:21:04.616Z">
+<meta property="article:author" content="不换">
+<meta property="article:tag" content="React">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/2022/05/React-guess-2.jpg"><script>(function() {
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="不换"><img width="96" loading="lazy" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/static/16393598091743192.jpeg?x-oss-process=style/HANDLE_IMAGE" alt="不换"><span class="site-author-status" title="心若向阳，无惧悲伤">🐯</span></a><div class="site-author-name"><a href="/about/">不换</a></div><a class="site-name" href="/about/site.html">不换的小窝</a><sub class="site-subtitle"></sub><div class="site-description"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">3</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">5</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://www.bigdreamer.cc" title="Home"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:rocket-2-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="http://wpa.qq.com/msgrd?v=3&amp;uin=1826001146&amp;site=qq&amp;menu=yes" title="QQ 1826001146" target="_blank" style="color:#12B7F5"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-qq-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/bigbigDreamer" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:jadeface.scholar@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a><a class="links-item hty-icon-button" href="/girls/" title="我的后宫" style="color:hotpink"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-women-line"></use></svg></a><a class="links-item hty-icon-button" href="/copyright/" title="版权（免责）声明" style="color:null"><span class="icon iconify" data-icon="ri:copyright-line"></span></a><a class="links-item hty-icon-button" href="/todolist/" title="Todo List" style="color:null"><span class="icon iconify" data-icon="ri:calendar-todo-line"></span></a><a class="links-item hty-icon-button" target="_blank" rel="noopener" href="https://whoami.bigdreamer.cc" title="关于我的里程碑" style="color:null"><span class="icon iconify" data-icon="ri:mickey-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#React%E7%90%86%E5%BF%B5%E7%AF%87"><span class="toc-number">1.</span> <span class="toc-text">React理念篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#React-%E6%9E%B6%E6%9E%84%E7%AF%87"><span class="toc-number">2.</span> <span class="toc-text">React 架构篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fiber-%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">Fiber 架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fiber-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">Fiber 工作原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JSX"><span class="toc-number">5.</span> <span class="toc-text">深入理解JSX</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E6%9C%AB%E5%BD%A9%E8%9B%8B%EF%BC%9A%E6%89%8B%E5%86%99%E7%AC%94%E8%AE%B0"><span class="toc-number">6.</span> <span class="toc-text">文末彩蛋：手写笔记</span></a></li></ol></div></div></div><div class="tag-cloud"><div class="tag-cloud-tags"><a href="/tags/Antd/" style="font-size: 12px; color: #999">Antd</a> <a href="/tags/React/" style="font-size: 30px; color: #0078e7">React</a> <a href="/tags/%E6%80%9D%E8%80%83/" style="font-size: 12px; color: #999">思考</a> <a href="/tags/%E7%BB%84%E4%BB%B6%E5%BA%93/" style="font-size: 12px; color: #999">组件库</a> <a href="/tags/%E9%9A%8F%E6%83%B3/" style="font-size: 12px; color: #999">随想</a></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#597ef7;"><link itemprop="mainEntityOfPage" href="https://dev.bigdreamer.cc/precision-react-demystified1/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="不换"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="不换的小窝"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">精读《React技术揭秘》上</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-05-30 00:09:04" itemprop="dateCreated datePublished" datetime="2022-05-30T00:09:04+00:00">2022-05-30</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-2-line"></span></span> <time title="修改时间：2022-07-24 12:21:04" itemprop="dateModified" datetime="2022-07-24T12:21:04+00:00">2022-07-24</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">1.1k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">3m</span></span></span><span class="leancloud_visitors" id="/precision-react-demystified1/" data-flag-title="精读《React技术揭秘》上"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-eye-line"></use></svg> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-chat-3-line"></use></svg> <span class="waline-comment-count" id="/precision-react-demystified1/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E7%AC%94%E8%AE%B0/" style="--text-color:dimgray" itemprop="url" rel="index"><span itemprop="text">笔记</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/React/" style="--text-color:#61dafb"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">React</span></a></span></div><div class="post-author"><div class="author-avatar"><img src="https://www.gravatar.com/avatar/d9d40be51d2c2fd33952133c66b698d8?s=20&amp;d=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2FYunYouJun%2Fcdn%2Fimg%2Favatar%2Fnone.jpg"></div><span class="author-name">不换</span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><p>书籍传送门：<a target="_blank" rel="noopener" href="https://react.iamkasong.com/">React技术揭秘</a>——卡颂</p>
+<blockquote>
+<p>前言：整篇文章，我都将以<code>问题</code>+<code>笔记</code>的形式作为精读的导语展开叙述～<strong>文末有彩蛋喔～～～</strong></p>
+</blockquote>
+<span id="more"></span>
+
+<h3 id="React理念篇"><a href="#React理念篇" class="headerlink" title="React理念篇"></a>React理念篇</h3><blockquote>
+<p>我们认为，React 是用 JavaScript 构建快速响应的大型 Web 应用程序的首选方式。它在 Facebook 和 Instagram 上表现优秀。</p>
+</blockquote>
+<p>众所周知的一个概念是：<strong>JS和GUI渲染是互斥的</strong>；</p>
+<pre class="language-js" data-language="js"><code class="language-js"><span class="token keyword">var</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">5</span><span class="token punctuation">,</span><span class="token number">6</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">var</span> i <span class="token keyword">in</span> arr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'i:'</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">var</span> newNode <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">"div"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      newNode<span class="token punctuation">.</span>className <span class="token operator">=</span> <span class="token string">'book'</span><span class="token punctuation">;</span>
+      main<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>newNode<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">1000</span> <span class="token operator">*</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><code>Demo</code>来源：<a target="_blank" rel="noopener" href="http://static.kancloud.cn/xiak/quanduan/375582">JS引擎和GUI引擎是互斥的</a></p>
+<hr>
+<p><code>React</code>解决了什么问题，如何实现？</p>
+<p>[1] <code>CPU</code>瓶颈：数据渲染量大，设备性能不足，容易掉帧，造成用户视觉卡顿；<br>[2] <code>IO</code>瓶颈：网络延迟给用户造成的视觉感知；</p>
+<blockquote>
+<p>答案：”时间切片”。—– 将同步的更新变成可中断的异步更新。</p>
+</blockquote>
+<p><strong>问题：</strong></p>
+<ol>
+<li>同步的更新是针对于谁而言？<ul>
+<li><code>React 15</code>而言。</li>
+</ul>
+</li>
+<li>异步的更新中断后去做了什么？做完之后又干了什么？<ul>
+<li>更新中断后，把控制权交给主线程去<code>Update</code>，做完之后检测是否有空闲时间，再去接着执行上一次中断后的任务。<strong>中断过程是发生在内存中的，所以用户不会有任何感知</strong></li>
+</ul>
+</li>
+<li>什么时候会中断？<ul>
+<li>有高优先任务进入；</li>
+<li>当前帧无剩余时间；</li>
+</ul>
+</li>
+</ol>
+<h3 id="React-架构篇"><a href="#React-架构篇" class="headerlink" title="React 架构篇"></a>React 架构篇</h3><blockquote>
+<p>React 15 架构</p>
+</blockquote>
+<ul>
+<li><code>Reconciler</code>协调器，负责变化的组件。</li>
+<li><code>Renderer</code>渲染器，负责将变化的组件渲染到页面中。</li>
+</ul>
+<p><code>mountComponent</code>&amp;<code>updateComponent</code>时，都会递归组件。</p>
+<p><strong>递归开始，中途无法中断，当层级很深时，递归更新时间超过了316ms，用户交互就会明显感觉卡顿</strong>；</p>
+<p><em><code>React15</code>的<code>Reconciler</code>做了什么？</em></p>
+<p><code>Reconciler</code>和<code>Renderer</code>交替执行，通过递归挂载<code>dom</code>树。</p>
+<blockquote>
+<p>React 16架构</p>
+</blockquote>
+<ul>
+<li><code>Scheduler</code>(调度器)—调度高优任务进入<code>Reconciler</code>。<strong>核心应该是后边的 <code>lans</code></strong></li>
+<li><code>Reconciler</code>(协调器)—-负责找出变化的组件，并<code>diff</code>生成新的<code>DOM</code>结构</li>
+<li><code>Renderer</code>(渲染器)—-负责将变化渲染到页面上</li>
+</ul>
+<p><strong>整个<code>scheduler</code>和<code>reconciler</code>都是在内存中进行的，只有当所有组件都完成<code>Reconciler</code>的工作，才会统一交给<code>Renderer</code>的去处理。</strong></p>
+<hr>
+<p>笔者阅读此处曾有过疑问：【中断是何时开始的？中断的是<code>commit</code>截断还是<code>render</code>阶段？会中断<code>render</code>任务吗？】</p>
+<p>其实答案已经在文章中了，此处只是略作记录～</p>
+<hr>
+<p><code>Reconciler</code>会为虚拟<code>DOM(fiber)</code>打标记（<code>增</code>、<code>删</code>、<code>改</code>、<code>hooks</code>等）；</p>
+<p><code>Renderer</code>会根据虚拟<code>DOM</code>中的标记，对真实<code>DOM</code>进行操作（同步执行）；</p>
+<h3 id="Fiber-架构"><a href="#Fiber-架构" class="headerlink" title="Fiber 架构"></a>Fiber 架构</h3><p>读到这里，笔者跟大家其实都有同一个疑问：<strong>什么是<code>Fiber</code>？</strong></p>
+<ul>
+<li>架构维度<ul>
+<li><code>stack reconciler</code>（<code>React 15</code>） —-&gt; <code>fiber reconciler</code>（<code>React 16</code>）；</li>
+</ul>
+</li>
+<li>数据结构维度<ul>
+<li>每个<code>Fiber</code>都对应一个<code>React Element</code>，记录了组件的类型和<code>DOM</code>信息；</li>
+</ul>
+</li>
+<li>工作单元维度<ul>
+<li>动态的<code>WIP</code> <code>Fiber</code> 树，保留了<code>Fiber</code>的更新信息；（<code>WIP fiber</code> —&gt; <code>current fiber</code>）</li>
+</ul>
+</li>
+</ul>
+<p><strong>问题：</strong> 咋不叫<code>虚拟DOM</code>了，那现在叫啥？</p>
+<p>原来的<code>虚拟DOM</code>已经更名为<code>Fiber DOM</code>，其实底层还是一样的思想，就是一个<code>JS对象</code>。描述<code>真实DOM</code>在内存中的形态。</p>
+<h3 id="Fiber-工作原理"><a href="#Fiber-工作原理" class="headerlink" title="Fiber 工作原理"></a>Fiber 工作原理</h3><blockquote>
+<p>双缓存技术：内存中构建并直接替换；</p>
+</blockquote>
+<p><strong>current fiber</strong> —–&gt; <strong>wip fiber</strong>，每次<code>update</code>始终会创建一个新的<code>wip fiber</code>，使用<code>alternate</code>指针指向<code>current fiber</code>。</p>
+<p><strong>问题：</strong> 新的<code>wip fiber</code>是根据旧的<code>current fiber</code>去构建吗？</p>
+<p>答：答案是肯定的，<code>wip fiber</code>会根据旧的<code>current fiber</code>去构建，复用其节点数据。</p>
+<h3 id="深入理解JSX"><a href="#深入理解JSX" class="headerlink" title="深入理解JSX"></a>深入理解<code>JSX</code></h3><p>[1] 什么是<code>JSX</code>？</p>
+<ul>
+<li><code>JSX</code>是一种语法，用来描述当前组件内容的数据结构。</li>
+</ul>
+<p>[2] <code>JSX</code>与<code>Fiber</code>有什么关系？</p>
+<ul>
+<li><code>mount</code>和<code>update</code>，都会根据对应的<code>jsx</code>数据结构，生成对应的<code>fiber</code>节点，<code>fiber</code>也是一种数据结构。</li>
+</ul>
+<p>[3] <code>React Element</code>和<code>React Component</code>是什么关系？<br>参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/29711902">React 探秘 - React Component 和 Element（文末附彩蛋demo和源码）</a></p>
+<ul>
+<li>使用<code>React Component</code>来生成<code>React Element</code>，但是不一定返回的是一定是<code>React Element</code>，也有可能是<code>null</code>。<ul>
+<li>当写<code>JSX</code>时，<code>babel</code>会自动转译<code>JSX</code>为<code>React Element</code>.</li>
+<li><code>React Component</code>分为：<code>Class Component</code>&amp;<code>Function Component</code>;</li>
+</ul>
+</li>
+</ul>
+<h3 id="文末彩蛋：手写笔记"><a href="#文末彩蛋：手写笔记" class="headerlink" title="文末彩蛋：手写笔记"></a>文末彩蛋：手写笔记</h3><p><img src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/2022/05/React-guess-2.jpg" loading="lazy"></p>
+<p><img src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/2022/05/React-guess-3.jpg" loading="lazy"></p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/reward/WechatIMG27808.jpeg"><img loading="lazy" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/reward/WechatIMG27808.jpeg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><span class="icon iconify" data-icon="ri:alipay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>不换</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://dev.bigdreamer.cc/precision-react-demystified1/" title="精读《React技术揭秘》上">https://dev.bigdreamer.cc/precision-react-demystified1/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul><script>document.addEventListener('copy', function (event) {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  if (!clipboardData) { return; }
+  const text = window.getSelection().toString();
+  if (text) {
+    event.preventDefault();
+    clipboardData.setData('text/plain', text + '\n\n本文作者：不换\n本文链接：https://dev.bigdreamer.cc/precision-react-demystified1/\n版权声明：本博客所有文章除特别声明外，均默认采用 CC BY-NC-SA 4.0 许可协议。');
+  }
+});</script></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/precision-react-demystified2/" rel="prev" title="精读《React技术揭秘》中 卷一"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">精读《React技术揭秘》中 卷一</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/antd-notebook-error-scroll/" rel="next" title="Antd使用笔记（scrollToFirstError使用小记）"><span class="post-nav-text">Antd使用笔记（scrollToFirstError使用小记）</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div id="waline"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/precision-react-demystified1/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2022 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> 不换</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2022-04-10T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#597ef7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><div class="aplayer no-destroy" id="aplayer" data-id="308168565" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay data-theme="#597ef7" data-loop="all" data-order="list" data-preload="auto" data-volume="0.7" data-mutex data-lrctype="0" data-listmaxheight="340px" data-storagename="metingjs"></div><script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"https://cdn.jsdelivr.net/npm/live2d-widget-model-wanko@1.0.5/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":null,"log":false});</script></body></html>
