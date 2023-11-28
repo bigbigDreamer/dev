@@ -1,0 +1,158 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#597ef7"><meta name="author" content="不换"><meta name="copyright" content="不换"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>精读《React技术揭秘》中 卷一 | 不换的小窝</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.2.4/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link class="aplayer-style-marker" rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script class="aplayer-script-marker" src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" defer></script><script class="meting-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js" defer></script><script src="/js/pjax.js" defer type="module"></script><script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script><link rel="icon" type="image/png" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/favicon.png"><link rel="mask-icon" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/favicon.png" color="#597ef7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"dev.bigdreamer.cc","root":"/","title":"不换的小窝","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"local_search":{"path":"/search.xml"},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":null},"waline":{"config":{"enable":true,"serverURL":"https://waline.bigdreamer.cc","comment":true,"visitor":true,"avatar":"https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/static/16393598091743192.jpeg?x-oss-process=style/HANDLE_IMAGE","el":"#waline","lang":"zh-CN"},"cdn":"https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://cdn.jsdelivr.net/npm/","darken":"https://cdn.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"><meta name="description" content="书籍传送门：React技术揭秘——卡颂  前言：整篇文章，我都将以问题+笔记的形式作为精读的导语展开叙述～文末有彩蛋喔～～～  上一篇文章中，我们已经了解了fiber架构，fiber思想以及React fiber的设计理念，本篇，我们着重了解架构篇：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="精读《React技术揭秘》中 卷一">
+<meta property="og:url" content="https://dev.bigdreamer.cc/precision-react-demystified2/index.html">
+<meta property="og:site_name" content="不换的小窝">
+<meta property="og:description" content="书籍传送门：React技术揭秘——卡颂  前言：整篇文章，我都将以问题+笔记的形式作为精读的导语展开叙述～文末有彩蛋喔～～～  上一篇文章中，我们已经了解了fiber架构，fiber思想以及React fiber的设计理念，本篇，我们着重了解架构篇：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/2022/06/React%E6%8F%AD%E7%A7%98-4.jpg">
+<meta property="article:published_time" content="2022-06-14T00:09:04.000Z">
+<meta property="article:modified_time" content="2023-11-28T04:40:43.602Z">
+<meta property="article:author" content="不换">
+<meta property="article:tag" content="React">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/2022/06/React%E6%8F%AD%E7%A7%98-4.jpg"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="不换"><img width="96" loading="lazy" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/static/16393598091743192.jpeg?x-oss-process=style/HANDLE_IMAGE" alt="不换"><span class="site-author-status" title="心若向阳，无惧悲伤">🐯</span></a><div class="site-author-name"><a href="/about/">不换</a></div><a class="site-name" href="/about/site.html">不换的小窝</a><sub class="site-subtitle"></sub><div class="site-description"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">11</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">9</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://www.bigdreamer.cc" title="Home"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:rocket-2-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="http://wpa.qq.com/msgrd?v=3&amp;uin=1826001146&amp;site=qq&amp;menu=yes" title="QQ 1826001146" target="_blank" style="color:#12B7F5"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-qq-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/bigbigDreamer" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:jadeface.scholar@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a><a class="links-item hty-icon-button" href="/copyright/" title="版权（免责）声明" style="color:null"><span class="icon iconify" data-icon="ri:copyright-line"></span></a><a class="links-item hty-icon-button" href="/todolist/" title="Todo List" style="color:null"><span class="icon iconify" data-icon="ri:calendar-todo-line"></span></a><a class="links-item hty-icon-button" target="_blank" rel="noopener" href="https://whoami.bigdreamer.cc" title="关于我的里程碑" style="color:null"><span class="icon iconify" data-icon="ri:mickey-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#React-%E6%9E%B6%E6%9E%84%E7%AF%87"><span class="toc-number">1.</span> <span class="toc-text">React 架构篇</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-number">1.0.1.</span> <span class="toc-text">注意</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E6%9C%AB%E5%BD%A9%E8%9B%8B%EF%BC%9A%E6%89%8B%E5%86%99%E7%AC%94%E8%AE%B0"><span class="toc-number">2.</span> <span class="toc-text">文末彩蛋：手写笔记</span></a></li></ol></div></div></div><div class="tag-cloud"><div class="tag-cloud-tags"><a href="/tags/Antd/" style="font-size: 12px; color: #999">Antd</a> <a href="/tags/HTTP/" style="font-size: 12px; color: #999">HTTP</a> <a href="/tags/React/" style="font-size: 30px; color: #0078e7">React</a> <a href="/tags/%E5%BC%95%E5%AD%90/" style="font-size: 12px; color: #999">引子</a> <a href="/tags/%E6%80%9D%E8%80%83/" style="font-size: 12px; color: #999">思考</a> <a href="/tags/%E6%84%9F%E6%82%9F/" style="font-size: 12px; color: #999">感悟</a> <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" style="font-size: 12px; color: #999">模块化</a> <a href="/tags/%E7%BB%84%E4%BB%B6%E5%BA%93/" style="font-size: 12px; color: #999">组件库</a> <a href="/tags/%E9%9A%8F%E6%83%B3/" style="font-size: 12px; color: #999">随想</a></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#597ef7;"><link itemprop="mainEntityOfPage" href="https://dev.bigdreamer.cc/precision-react-demystified2/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="不换"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="不换的小窝"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">精读《React技术揭秘》中 卷一</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-06-14 00:09:04" itemprop="dateCreated datePublished" datetime="2022-06-14T00:09:04+00:00">2022-06-14</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-2-line"></span></span> <time title="修改时间：2023-11-28 04:40:43" itemprop="dateModified" datetime="2023-11-28T04:40:43+00:00">2023-11-28</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">673</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">2m</span></span></span><span class="leancloud_visitors" id="/precision-react-demystified2/" data-flag-title="精读《React技术揭秘》中 卷一"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-chat-3-line"></use></svg> <span class="waline-comment-count" id="/precision-react-demystified2/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E7%AC%94%E8%AE%B0/" style="--text-color:dimgray" itemprop="url" rel="index"><span itemprop="text">笔记</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/React/" style="--text-color:#61dafb"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">React</span></a></span></div><div class="post-author"><div class="author-avatar"><img src="https://www.gravatar.com/avatar/d9d40be51d2c2fd33952133c66b698d8?s=20&amp;d=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2FYunYouJun%2Fcdn%2Fimg%2Favatar%2Fnone.jpg"></div><span class="author-name">不换</span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><p>书籍传送门：<a target="_blank" rel="noopener" href="https://react.iamkasong.com/">React技术揭秘</a>——卡颂</p>
+<blockquote>
+<p>前言：整篇文章，我都将以<code>问题</code>+<code>笔记</code>的形式作为精读的导语展开叙述～<strong>文末有彩蛋喔～～～</strong></p>
+</blockquote>
+<p>上一篇文章中，我们已经了解了<code>fiber</code>架构，<code>fiber</code>思想以及<code>React fiber</code>的设计理念，本篇，我们着重了解<strong>架构篇</strong>：</p>
+<span id="more"></span>
+
+<h3 id="React-架构篇"><a href="#React-架构篇" class="headerlink" title="React 架构篇"></a>React 架构篇</h3><p>分为<code>Render</code>&amp;<code>Commit</code>两个阶段；</p>
+<p><strong>Render 阶段做了什么事？</strong></p>
+<p><code>Render</code>阶段可以简单描述为：先遍历—&gt;后递归。遍历<code>diff</code>、递归<code>build dom</code>；</p>
+<p><code>Render</code>阶段细分为：<code>beginWork</code> &amp; <code>completeWork</code></p>
+<ul>
+<li><code>beginWork</code><ul>
+<li>传入<code>当前 fiber</code>节点，创建子<code>fiber</code>节点<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">function</span> <span class="token function">beginWork</span><span class="token punctuation">(</span>
+   current<span class="token operator">:</span> Fiber <span class="token operator">|</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
+   workInProgress<span class="token operator">:</span> Fiber<span class="token punctuation">,</span>
+   renderLanes<span class="token operator">:</span> Lanes<span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token operator">:</span> Fiber <span class="token operator">|</span> <span class="token keyword">null</span> <span class="token punctuation">&#123;</span>
+   <span class="token comment">// ...省略函数体</span>
+<span class="token punctuation">&#125;</span></code></pre></li>
+<li><code>current</code>指的是<code>wip.alternate</code>,也就是当前组件上一次更新时的<code>fiber</code>节点;</li>
+<li><code>workInProgress</code>指的是当前组件的<code>fiber</code>;</li>
+<li><code>renderLanes</code>指的是<code>优先级</code>；</li>
+</ul>
+</li>
+</ul>
+<p>可以通过<code>current !== null</code>来区分是<code>mount</code>还是<code>update</code>，基于此，<code>beginWork</code>又可以分为两个阶段：<code>mount</code>&amp;<code>update</code>.</p>
+<p><code>mount</code>阶段，会根据不同的<code>fiber.tag</code>创建不同的<code>fiber</code>节点。</p>
+<p><code>update</code>阶段</p>
+<ul>
+<li>会根据<code>props</code>与<code>fiber.type</code>的比对决定是否要复用<code>fiber</code>节点</li>
+<li>根据<code>renderLanes</code>判断优先级，配合<code>Schedule</code>去实现任务调度</li>
+</ul>
+<p>问题：如果不能复用，怎么办呢？</p>
+<p>答：进入<code>diff</code>，交给<code>reconcile</code>去处理。</p>
+<p><code>beginWork</code>结束后，就会进入<code>reconcileChildren</code>.也就是传说中的<code>diff算法</code></p>
+<blockquote>
+<h5 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h5><p>值得一提的是，mountChildFibers 与 reconcileChildFibers 这两个方法的逻辑基本一致。唯一的区别是：reconcileChildFibers 会为生成的 Fiber 节点带上 effectTag 属性，而 mountChildFibers 不会。</p>
+</blockquote>
+<p>在<code>reconcileChildren</code>结束后，紧接着就是根据<code>diff</code>结果为<code>fiber</code>打上<code>effetTag</code>，例如：它是增、改、还是删等。</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">// DOM需要插入到页面中</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> Placement <span class="token operator">=</span> <span class="token comment">/*                */</span> <span class="token number">0b00000000000010</span><span class="token punctuation">;</span>
+<span class="token comment">// DOM需要更新</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> Update <span class="token operator">=</span> <span class="token comment">/*                   */</span> <span class="token number">0b00000000000100</span><span class="token punctuation">;</span>
+<span class="token comment">// DOM需要插入到页面中并更新</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> PlacementAndUpdate <span class="token operator">=</span> <span class="token comment">/*       */</span> <span class="token number">0b00000000000110</span><span class="token punctuation">;</span>
+<span class="token comment">// DOM需要删除</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> Deletion <span class="token operator">=</span> <span class="token comment">/*                 */</span> <span class="token number">0b00000000001000</span><span class="token punctuation">;</span></code></pre>
+
+<p><strong>小疑问：<code>mount</code>阶段也会打<code>Placement</code>tag，那么执行 插入操作会不会很低效？</strong></p>
+<p>答：<code>mount</code>阶段确实会打<code>Placement</code> tag，但是是在<code>rootFiber</code>上打的。</p>
+<ul>
+<li><code>completeWork</code></li>
+</ul>
+<p>跟 <code>beginWork</code>一样，都是根据不同的<code>tag</code>去做不同的处理。</p>
+<p><strong>update</strong></p>
+<ul>
+<li>处理事件相关的回调函数的注册</li>
+<li>处理 <code>style prop</code></li>
+<li>处理<code>DANGEROUSLY_SET_INNER_HTML prop</code></li>
+<li>处理<code>children prop</code></li>
+</ul>
+<p><strong>mount</strong></p>
+<p>删除的文字是<code>卡老师</code>原文中的，但是，我觉得只要没渲染到页面上，它就还是<code>Fiber</code>树～正好跟上缓存的概念相对应。</p>
+<ul>
+<li><del>为<code>Fiber</code>节点生成对应的<code>DOM</code>节点</del> 为<code>Current Fiber</code>[屏幕上显示的]节点生成对应的<code>WIP Fiber</code>[正在内存中构建的]节点。</li>
+<li><del>将子孙<code>DOM</code>节点插入刚生成的<code>DOM</code>节点中</del> 将子孙<code>Fiber</code>节点插入刚生成的<code>Fiber</code>节点中。</li>
+<li>与<code>update</code>相似的的处理<code>props</code></li>
+</ul>
+<h3 id="文末彩蛋：手写笔记"><a href="#文末彩蛋：手写笔记" class="headerlink" title="文末彩蛋：手写笔记"></a>文末彩蛋：手写笔记</h3><p><img src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/2022/06/React%E6%8F%AD%E7%A7%98-4.jpg" loading="lazy"></p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/reward/WechatIMG27808.jpeg"><img loading="lazy" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/reward/WechatIMG27808.jpeg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><span class="icon iconify" data-icon="ri:alipay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>不换</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://dev.bigdreamer.cc/precision-react-demystified2/" title="精读《React技术揭秘》中 卷一">https://dev.bigdreamer.cc/precision-react-demystified2/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul><script>document.addEventListener('copy', function (event) {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  if (!clipboardData) { return; }
+  const text = window.getSelection().toString();
+  if (text) {
+    event.preventDefault();
+    clipboardData.setData('text/plain', text + '\n\n本文作者：不换\n本文链接：https://dev.bigdreamer.cc/precision-react-demystified2/\n版权声明：本博客所有文章除特别声明外，均默认采用 CC BY-NC-SA 4.0 许可协议。');
+  }
+});</script></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/precision-react-demystified2-2/" rel="prev" title="精读《React技术揭秘》中 卷二"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">精读《React技术揭秘》中 卷二</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/precision-react-demystified1/" rel="next" title="精读《React技术揭秘》上"><span class="post-nav-text">精读《React技术揭秘》上</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div id="waline"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/precision-react-demystified2/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2022 – 2023 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> 不换</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2022-04-10T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#597ef7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><div class="aplayer no-destroy" id="aplayer" data-id="308168565" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay data-theme="#597ef7" data-loop="all" data-order="list" data-preload="auto" data-volume="0.7" data-mutex data-lrctype="0" data-listmaxheight="340px" data-storagename="metingjs"></div><script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"https://cdn.jsdelivr.net/npm/live2d-widget-model-wanko@1.0.5/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":null,"log":false});</script></body></html>

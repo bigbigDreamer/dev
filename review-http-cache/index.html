@@ -1,0 +1,352 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#597ef7"><meta name="author" content="不换"><meta name="copyright" content="不换"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>重温 HTTP 缓存 | 不换的小窝</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.2.4/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="//at.alicdn.com/t/font_1140697_dxory92pb0h.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link class="aplayer-style-marker" rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script class="aplayer-script-marker" src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" defer></script><script class="meting-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js" defer></script><script src="/js/pjax.js" defer type="module"></script><script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script><link rel="icon" type="image/png" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/favicon.png"><link rel="mask-icon" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/favicon.png" color="#597ef7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"dev.bigdreamer.cc","root":"/","title":"不换的小窝","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"local_search":{"path":"/search.xml"},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":null},"waline":{"config":{"enable":true,"serverURL":"https://waline.bigdreamer.cc","comment":true,"visitor":true,"avatar":"https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/static/16393598091743192.jpeg?x-oss-process=style/HANDLE_IMAGE","el":"#waline","lang":"zh-CN"},"cdn":"https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://cdn.jsdelivr.net/npm/","darken":"https://cdn.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"><meta name="description" content="(: 因为一手文章在掘金，只换了 gif ，剩下的原图有水印，懒得换了，gif 有些模糊，自行脑补。  蓦然回首，那“缓存”却在灯火阑珊处～ Situation（情景）作为日常的知识复习，重温一下浏览器缓存。 知识不止于眼前的文字，更在当下的实操。 Task（任务） 通过查阅权威资料整理关键知识点 通过实操，重温缓存场景">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重温 HTTP 缓存">
+<meta property="og:url" content="https://dev.bigdreamer.cc/review-http-cache/index.html">
+<meta property="og:site_name" content="不换的小窝">
+<meta property="og:description" content="(: 因为一手文章在掘金，只换了 gif ，剩下的原图有水印，懒得换了，gif 有些模糊，自行脑补。  蓦然回首，那“缓存”却在灯火阑珊处～ Situation（情景）作为日常的知识复习，重温一下浏览器缓存。 知识不止于眼前的文字，更在当下的实操。 Task（任务） 通过查阅权威资料整理关键知识点 通过实操，重温缓存场景">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2012.46.04.gif">
+<meta property="og:image" content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1c55b3a25bf948359e693274c3fcc440~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2013.01.30.gif">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9579dbedc0544b619aaf06d5d22760d0~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/71722c5873fc419f8f771a5347936cfb~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2020.48.32.gif">
+<meta property="og:image" content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6dfc4a3d0b7c4012b44da7975ff69468~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ceda93029f9140a9b3519ad6cf8ef53c~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1ba7298219994c6e887c70f5453127b6~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0bc7a964ea93455b9e313fbdd27fa6f9~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2020.55.52.gif">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ec042328f299435abafd1a2ca0d163bf~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2021.17.10.gif">
+<meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/94243716906e447e939142cbce763572~tplv-k3u1fbpfcp-watermark.image">
+<meta property="article:published_time" content="2022-08-19T22:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-28T04:40:43.602Z">
+<meta property="article:author" content="不换">
+<meta property="article:tag" content="HTTP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2012.46.04.gif"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="不换"><img width="96" loading="lazy" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/static/16393598091743192.jpeg?x-oss-process=style/HANDLE_IMAGE" alt="不换"><span class="site-author-status" title="心若向阳，无惧悲伤">🐯</span></a><div class="site-author-name"><a href="/about/">不换</a></div><a class="site-name" href="/about/site.html">不换的小窝</a><sub class="site-subtitle"></sub><div class="site-description"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">11</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">9</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://www.bigdreamer.cc" title="Home"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:rocket-2-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="http://wpa.qq.com/msgrd?v=3&amp;uin=1826001146&amp;site=qq&amp;menu=yes" title="QQ 1826001146" target="_blank" style="color:#12B7F5"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-qq-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/bigbigDreamer" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:jadeface.scholar@gmail.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a><a class="links-item hty-icon-button" href="/copyright/" title="版权（免责）声明" style="color:null"><span class="icon iconify" data-icon="ri:copyright-line"></span></a><a class="links-item hty-icon-button" href="/todolist/" title="Todo List" style="color:null"><span class="icon iconify" data-icon="ri:calendar-todo-line"></span></a><a class="links-item hty-icon-button" target="_blank" rel="noopener" href="https://whoami.bigdreamer.cc" title="关于我的里程碑" style="color:null"><span class="icon iconify" data-icon="ri:mickey-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Situation%EF%BC%88%E6%83%85%E6%99%AF%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">Situation（情景）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Task%EF%BC%88%E4%BB%BB%E5%8A%A1%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">Task（任务）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Action%EF%BC%88%E5%8A%A8%E4%BD%9C%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">Action（动作）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HTTP-%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5%EF%BC%9A"><span class="toc-number">3.1.</span> <span class="toc-text">HTTP 缓存策略：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Result%EF%BC%88%E7%BB%93%E8%AE%BA%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">Result（结论）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HTTP-%E7%BC%93%E5%AD%98%E4%BD%93%E7%B3%BB"><span class="toc-number">4.1.</span> <span class="toc-text">HTTP 缓存体系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">4.2.</span> <span class="toc-text">参考资料</span></a></li></ol></li></ol></div></div></div><div class="tag-cloud"><div class="tag-cloud-tags"><a href="/tags/Antd/" style="font-size: 12px; color: #999">Antd</a> <a href="/tags/HTTP/" style="font-size: 12px; color: #999">HTTP</a> <a href="/tags/React/" style="font-size: 30px; color: #0078e7">React</a> <a href="/tags/%E5%BC%95%E5%AD%90/" style="font-size: 12px; color: #999">引子</a> <a href="/tags/%E6%80%9D%E8%80%83/" style="font-size: 12px; color: #999">思考</a> <a href="/tags/%E6%84%9F%E6%82%9F/" style="font-size: 12px; color: #999">感悟</a> <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" style="font-size: 12px; color: #999">模块化</a> <a href="/tags/%E7%BB%84%E4%BB%B6%E5%BA%93/" style="font-size: 12px; color: #999">组件库</a> <a href="/tags/%E9%9A%8F%E6%83%B3/" style="font-size: 12px; color: #999">随想</a></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#597ef7;"><link itemprop="mainEntityOfPage" href="https://dev.bigdreamer.cc/review-http-cache/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="不换"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="不换的小窝"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">重温 HTTP 缓存</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-08-19 22:00:00" itemprop="dateCreated datePublished" datetime="2022-08-19T22:00:00+00:00">2022-08-19</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-2-line"></span></span> <time title="修改时间：2023-11-28 04:40:43" itemprop="dateModified" datetime="2023-11-28T04:40:43+00:00">2023-11-28</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">2.7k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">10m</span></span></span><span class="leancloud_visitors" id="/review-http-cache/" data-flag-title="重温 HTTP 缓存"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-chat-3-line"></use></svg> <span class="waline-comment-count" id="/review-http-cache/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E7%AC%94%E8%AE%B0/" style="--text-color:dimgray" itemprop="url" rel="index"><span itemprop="text">笔记</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/HTTP/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">HTTP</span></a></span></div><div class="post-author"><div class="author-avatar"><img src="https://www.gravatar.com/avatar/d9d40be51d2c2fd33952133c66b698d8?s=20&amp;d=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2FYunYouJun%2Fcdn%2Fimg%2Favatar%2Fnone.jpg"></div><span class="author-name">不换</span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+<p>(: 因为一手文章在掘金，只换了 <code>gif</code> ，剩下的原图有水印，懒得换了，gif 有些模糊，自行脑补。</p>
+</blockquote>
+<p>蓦然回首，那“缓存”却在灯火阑珊处～</p>
+<h3 id="Situation（情景）"><a href="#Situation（情景）" class="headerlink" title="Situation（情景）"></a>Situation（情景）</h3><p>作为日常的知识复习，重温一下浏览器缓存。</p>
+<p>知识不止于眼前的文字，更在当下的实操。</p>
+<h3 id="Task（任务）"><a href="#Task（任务）" class="headerlink" title="Task（任务）"></a>Task（任务）</h3><ul>
+<li>通过查阅权威资料整理关键知识点</li>
+<li>通过实操，重温缓存场景</li>
+</ul>
+<span id="more"></span>
+
+<h3 id="Action（动作）"><a href="#Action（动作）" class="headerlink" title="Action（动作）"></a>Action（动作）</h3><p>我们可以先来聊一个概念，就是一个东西的出现必然是有意义的。为什么要缓存？</p>
+<blockquote>
+<p>简单讲，节省不必要的流量开支，提升客户端访问速度。</p>
+</blockquote>
+<p>更宏观意义上来讲：</p>
+<blockquote>
+<p>蝴蝶效应：大量网络请求会消耗资源，产生热量，导致全球变暖。</p>
+</blockquote>
+<p>举个例子：当 <code>Client</code> 每次向 <code>Server</code> 请求资源，相同的资源只有首次加载会耗费流量，后面统一从本地缓存中拿。</p>
+<hr>
+<p>开始之前先介绍一个概念：<strong>新鲜度（Freshness）</strong></p>
+<p>摘录自：<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#expiration.model">HTTP 规范</a></p>
+<blockquote>
+<p>A fresh response is one whose age has not yet exceeded its freshness lifetime. Conversely, a stale response is one where it has.</p>
+<p>新鲜响应是指其年龄尚未超过其新鲜期的响应。反之，陈旧的响应是指它已经超过了。</p>
+</blockquote>
+<blockquote>
+<p>A response’s freshness lifetime is the length of time between its generation by the origin server and its expiration time. An explicit expiration time is the time at which the origin server intends that a stored response can no longer be used by a cache without further validation, whereas a heuristic expiration time is assigned by a cache when no explicit expiration time is available.</p>
+<p>响应的保鲜期是指从源服务器生成到过期时间之间的时间长度。明确的过期时间是指源服务器打算让缓存在没有进一步验证的情况下不再使用存储的响应的时间，而启发式过期时间是由缓存在没有明确过期时间的情况下指定的。</p>
+</blockquote>
+<p><strong>确定新鲜度的主要机制是源服务器使用<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#header.expires">Expires</a>标头字段（<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#header.expires" title="过期">第 5.3 节</a>）或 max-age 响应指令（<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#cache-response-directive.max-age" title="最大年龄">第 5.2.2.8 节</a>）提供未来的明确到期时间。</strong></p>
+<p>公式：<code>response_is_fresh = (freshness_lifetime &gt; current_age)</code></p>
+<ul>
+<li><p><code>freshness_lifetime</code></p>
+<ul>
+<li>如果缓存是共享的并且存在 s-maxage 响应指令（<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#cache-response-directive.s-maxage" title="s-maxage">第 5.2.2.9 节</a>），则使用它的值，或者</li>
+<li>如果存在 max-age 响应指令（<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#cache-response-directive.max-age" title="最大年龄">第 5.2.2.8 节</a>），请使用它的值，或者</li>
+<li>如果存在<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#header.expires">Expires</a>响应头字段（<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#header.expires" title="过期">第 5.3 节</a>），则使用其值减去<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7231.html#header.date">Date</a>响应头字段的值，或者</li>
+<li>否则，响应中不存在明确的到期时间。启发式的新鲜度生命周期可能适用；请参阅<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#heuristic.freshness" title="计算启发式新鲜度">第 4.2.2 节</a>。</li>
+</ul>
+</li>
+<li><p><code>current_age</code></p>
+<ul>
+<li>由于规范内容过多，并非本文的重点，这里不再做赘述，详细可查看：<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#age.calculations">传送门</a></li>
+</ul>
+</li>
+</ul>
+<p>总结一句话：通过 <code>Cache-Control</code> 和 <code>Expires</code> ，原始服务器可以对资源定义其保质期。在保质期之内，缓存就认为该资源是新鲜的，可以直接传回给客户端，如果过期那么就需要进行再验证。</p>
+<h4 id="HTTP-缓存策略："><a href="#HTTP-缓存策略：" class="headerlink" title="HTTP 缓存策略："></a>HTTP 缓存策略：</h4><ul>
+<li>强缓存（<code>Response Header</code> 中的 <code>Expries</code> 和 <code>Cache-Control</code> 头）</li>
+<li>协商缓存（<code>Res &amp; Req Header</code> 中的  <code>Last-Modify/If-Modify-Since</code> 和 <code>Etag/If-None-Match</code>）</li>
+</ul>
+<p>下面展开讲一讲</p>
+<p><strong>Expries</strong>（<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc822#section-5.1">需要固定格式的绝对日期</a>）</p>
+<p>表示缓存过期的时间，相对于主机而言的绝对时间。</p>
+<p>先简单用 <code>nest</code> 随便搭建个静态资源服务器，并设置 <code>Expires</code> 头：</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript">app<span class="token punctuation">.</span><span class="token function">useStaticAssets</span><span class="token punctuation">(</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'..'</span><span class="token punctuation">,</span> <span class="token string">'public'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+  <span class="token function-variable function">setHeaders</span><span class="token operator">:</span> <span class="token punctuation">(</span>res<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span>
+      <span class="token string">'Expires'</span><span class="token punctuation">,</span>
+      <span class="token function">dayjs</span><span class="token punctuation">(</span><span class="token string">'2022-08-19 13:00:15'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">15</span><span class="token punctuation">,</span> <span class="token string">'seconds'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'Cache-Control'</span><span class="token punctuation">,</span> <span class="token string">'private'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'Date'</span><span class="token punctuation">,</span> <span class="token function">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  lastModified<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  etag<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>来个动画</p>
+<p><img src="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2012.46.04.gif" alt="Kapture 2022-08-19 at 12.46.04.gif" loading="lazy"></p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1c55b3a25bf948359e693274c3fcc440~tplv-k3u1fbpfcp-watermark.image" alt="image.png" loading="lazy"></p>
+<p>首次请求时，浏览器进行了数据缓存，再次请求就不再向服务器发送请求，而是直接从 <code>disk cache</code> 中拿了。</p>
+<p><strong>Cache-Control</strong></p>
+<p>下面是头可选的几个值：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">Cache-Control: no-store, no-cache, max-age<span class="token operator">=</span><span class="token number">0</span>, must-revalidate, proxy-revalidate</code></pre>
+
+<p>先在静态资源服务器的 <code>Response</code> 上塞个 <code>Cache-Control</code> 头：</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript">app<span class="token punctuation">.</span><span class="token function">useStaticAssets</span><span class="token punctuation">(</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'..'</span><span class="token punctuation">,</span> <span class="token string">'public'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+  <span class="token function-variable function">setHeaders</span><span class="token operator">:</span> <span class="token punctuation">(</span>res<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// res.setHeader(</span>
+    <span class="token comment">//   'Expires',</span>
+    <span class="token comment">//   dayjs('2022-08-19 13:00:15').add(15, 'seconds').toDate(),</span>
+    <span class="token comment">// );</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'Cache-Control'</span><span class="token punctuation">,</span> <span class="token string">'max-age=3000'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'Date'</span><span class="token punctuation">,</span> <span class="token function">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  lastModified<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  etag<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>依旧再看动画：</p>
+<p><img src="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2013.01.30.gif" alt="Kapture 2022-08-19 at 13.01.30.gif" loading="lazy"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9579dbedc0544b619aaf06d5d22760d0~tplv-k3u1fbpfcp-watermark.image" alt="image.png" loading="lazy"></p>
+<p><code>max-age=3000</code> 的意思就是 <code>3000</code> 秒后过期。这个 <code>3000</code> 秒是相对于 <code>Response</code> 的 <code>Date</code> 头而言的。</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/71722c5873fc419f8f771a5347936cfb~tplv-k3u1fbpfcp-watermark.image" alt="image.png" loading="lazy"></p>
+<p>为了说明根本机时间是无关的，我截图了最新一次请求和我本机时间的截图拼接。</p>
+<p>那么如果两个头都存在呢？会做何种决策？实践的结果可能并不能说服我们，一样的思路，先翻规范，后实践证实。</p>
+<blockquote>
+<p>If a response includes a <a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#header.cache-control">Cache-Control</a> field with the max-age directive (<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#cache-response-directive.max-age" title="max-age">Section 5.2.2.8</a>), a recipient <em>MUST</em> ignore the Expires field. Likewise, if a response includes the s-maxage directive (<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#cache-response-directive.s-maxage" title="s-maxage">Section 5.2.2.9</a>), a shared cache recipient <em>MUST</em> ignore the Expires field. In both these cases, the value in Expires is only intended for recipients that have not yet implemented the Cache-Control field.</p>
+</blockquote>
+<blockquote>
+<p>如果一个响应包括一个带有max-age指令的<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#header.cache-control">Cache-Control</a>字段（<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#cache-response-directive.max-age" title="max-age">第5.2.2.8节</a>），接收者<em>必须</em>忽略 Expires 字段。同样，如果一个响应包括 s-maxage 指令（<a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#cache-response-directive.s-maxage" title="s-maxage">第5.2.2.9节</a>），共享缓存接收者<em>必须</em>忽略 Expires 字段。在这两种情况下，Expires 中的值只针对还没有实现 Cache-Control 字段的接收者。</p>
+</blockquote>
+<p><strong>规范结论：如果同时存在，那么以 <code>max-age</code> 为准。</strong></p>
+<p>下面，我们同时设置这两个头：</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript">app<span class="token punctuation">.</span><span class="token function">useStaticAssets</span><span class="token punctuation">(</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'..'</span><span class="token punctuation">,</span> <span class="token string">'public'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+  <span class="token function-variable function">setHeaders</span><span class="token operator">:</span> <span class="token punctuation">(</span>res<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span>
+      <span class="token string">'Expires'</span><span class="token punctuation">,</span>
+      <span class="token function">dayjs</span><span class="token punctuation">(</span><span class="token string">'2022-08-20 13:00:15'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">15</span><span class="token punctuation">,</span> <span class="token string">'seconds'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'Cache-Control'</span><span class="token punctuation">,</span> <span class="token string">'public,max-age=0'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'Date'</span><span class="token punctuation">,</span> <span class="token function">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  lastModified<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  etag<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>接着看动画：</p>
+<p><img src="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2020.48.32.gif" alt="Kapture 2022-08-19 at 20.48.32.gif" loading="lazy"></p>
+<p>可以看到，每次请求都是原始的 <code>4.8m</code>。小提示：<code>max-age=0</code> 等同于 <code>no-cache</code>。</p>
+<p><strong>小 Tip：每次请求如何要求浏览器不拿内存呢？前提是不使用 <code>Response Header</code> 做文章</strong></p>
+<ul>
+<li><ol>
+<li>在 <code>Dev Tools</code> 里开启 <code>Disable cache</code></li>
+</ol>
+<p>  <img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6dfc4a3d0b7c4012b44da7975ff69468~tplv-k3u1fbpfcp-watermark.image" alt="image.png" loading="lazy"></p>
+</li>
+<li><ol start="2">
+<li>借助 <code>Chrome</code> 插件， <code>Requesty</code> 来进行手动设置</li>
+</ol>
+</li>
+</ul>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ceda93029f9140a9b3519ad6cf8ef53c~tplv-k3u1fbpfcp-watermark.image" alt="image.png" loading="lazy"></p>
+<p>这里可以再提一个概念：重新加载和强制重新加载，见<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#reload_and_force_reload">MDN</a></p>
+<p>重新加载的实现方式：据 <code>MDN</code> 描述：</p>
+<blockquote>
+<p>For recovering from window corruption or updating to the latest version of the resource, browsers provide a reload function for users.</p>
+</blockquote>
+<blockquote>
+<p>That behavior is also defined in the <a target="_blank" rel="noopener" href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">Fetch</a> standard and can be reproduced in JavaScript by calling <code>fetch()</code> with the cache mode set to <code>no-cache</code> (note that <code>reload</code> is not the right mode for this case):</p>
+</blockquote>
+<p>上文借助 <code>chrome</code> 插件就是用了后者去实现重新加载的。</p>
+<p>强制重新加载的实现方式：</p>
+<ul>
+<li><p>开启 <code>Disable cache</code></p>
+</li>
+<li><p>在浏览器中操作</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1ba7298219994c6e887c70f5453127b6~tplv-k3u1fbpfcp-watermark.image" alt="image.png" loading="lazy"></p>
+</li>
+</ul>
+<hr>
+<p>接着上面的内容，我们来继续扩展讲讲剩下的几个值，应用到 <code>Cache-Control</code> 上有什么效果。这里只列举常用的。</p>
+<ul>
+<li><p><code>private</code> &#x2F; <code>public</code></p>
+<ul>
+<li><code>private</code> 代表私有缓存，例如近用户浏览器本地缓存等；</li>
+<li><code>public</code> 代表共享缓存；<br><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0bc7a964ea93455b9e313fbdd27fa6f9~tplv-k3u1fbpfcp-watermark.image" alt="image.png" loading="lazy"><br>—- 来自<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/3492319/private-vs-public-in-cache-control">Stackoverflow</a></li>
+</ul>
+</li>
+<li><p><code>no-cache</code></p>
+<ul>
+<li>要求缓存重新验证与源服务器的每个请求。</li>
+</ul>
+</li>
+<li><p><code>no-store</code></p>
+<ul>
+<li>禁止缓存</li>
+</ul>
+</li>
+</ul>
+<p>到这里，强缓存就结束了。</p>
+<p>那么思考一个问题，缓存失效了，它还能用吗？我想“续命”再用怎么办？跟服务端 <code>token</code> 续命相仿。带着这个问题，我们开始协商缓存的介绍。</p>
+<hr>
+<p>同样的形式，跟上文一样，我们开始从 <code>http 1.0</code> 的标准到 <code>http 1.1</code>。</p>
+<p><strong><code>Last-Modified</code> &amp; <code>If-Modified-Since</code></strong></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">Last-Modified: <span class="token number">2022</span>-08-19 <span class="token number">22</span>:00:00
+Cache-Control: max-age<span class="token operator">=</span><span class="token number">20</span></code></pre>
+
+<p>当请求资源后，浏览器收到这个相应头后开始缓存，并且标注“这个资源”最后更改的时间是：<code>2022-08-19 22:00:00</code>，并且在 <code>20</code> 秒后过期。</p>
+<p>等这 <code>20s</code>过期后，浏览器带着客户端的 <code>If-Modified-Since</code> 头说：老弟，我帮你问问，服务器的资源有没有变更过，问完之后，发现就没变过，返回 <code>304</code>，继续从缓存里拿。</p>
+<p>如果是新的，那么就执行下类似 <code>no-cache</code> 的操作，给到客户端最新的资源。</p>
+<p>我们开始操作静态资源服务器的设置：</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript">app<span class="token punctuation">.</span><span class="token function">useStaticAssets</span><span class="token punctuation">(</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'..'</span><span class="token punctuation">,</span> <span class="token string">'public'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+  <span class="token function-variable function">setHeaders</span><span class="token operator">:</span> <span class="token punctuation">(</span>res<span class="token punctuation">,</span> path<span class="token punctuation">,</span> stat<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// res.setHeader(</span>
+    <span class="token comment">//   'Expires',</span>
+    <span class="token comment">//   dayjs('2022-08-20 13:00:15').add(15, 'seconds').toDate(),</span>
+    <span class="token comment">// );</span>
+    <span class="token comment">// res.setHeader('Cache-Control', 'private');</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'Last-Modified'</span><span class="token punctuation">,</span> <span class="token function">dayjs</span><span class="token punctuation">(</span><span class="token string">'2022-08-19 19:38:15'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'Date'</span><span class="token punctuation">,</span> <span class="token function">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token comment">// lastModified: false,</span>
+  etag<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  redirect<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  index<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  maxAge<span class="token operator">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+
+<p><code>nest</code> 中 <code>max-age</code> 是以 <code>ms</code> 为单位的，也就是在 <code>2s</code> 后进行对比：<code>Last-Modified</code> &amp; <code>If-Modified-Since</code>。</p>
+<p>开始看动画：</p>
+<p><img src="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2020.55.52.gif" alt="Kapture 2022-08-19 at 20.55.52.gif" loading="lazy"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ec042328f299435abafd1a2ca0d163bf~tplv-k3u1fbpfcp-watermark.image" alt="image.png" loading="lazy"></p>
+<p>可以看到，第一次请求是 <code>4.8MB</code>, 第二次是 <code>290B</code>（因为 <code>2</code> 秒很快，所以已经过了缓存，并且比对完了，此时的 <code>200</code> 等同于 <code>304</code> 效果），可以仔细观察下第5次，恰好命中了缓存，所以是 <code>disk cache</code>。</p>
+<p><strong><code>Etag</code> &amp; <code>If-None-Match</code></strong></p>
+<p>细心的同学可能已经发现个问题，根据修改时间去做对比很容易漏掉一种场景：<code>就是打开了文件又保存了一下，没做任何变更，但是此时，计算机已经给文件打上了最新的时间</code>。</p>
+<p>这个时候，后面的这一对头就派上用场了。</p>
+<hr>
+<p>所谓：“年年岁岁花相似，岁岁年年人不同”。本质来讲这岁岁年年其实还是这个人，但是花可就不是了，时间也不是。</p>
+<p>同理，<code>Etag</code> 是根据内容产生的 <code>hash</code> ，跟一个人的<code>基因序列</code>一样，除非<code>基因序列</code>变了，那这个人就变了，至于变成啥样子，咱也不知道。所以内容变了，<code>Etag</code> 也就变了。</p>
+<p>跟上面的标签对是一样的，缓存前，本地记下原始的 <code>Etag</code>，等到缓存过期后，把原始的 <code>Etag</code> 赋给 <code>Request</code> 的 <code>If-None-Match</code> 头。带着这个头，去服务端对比。</p>
+<p>静态服务器代码：</p>
+<pre class="language-typescript" data-language="typescript"><code class="language-typescript">app<span class="token punctuation">.</span><span class="token function">useStaticAssets</span><span class="token punctuation">(</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'..'</span><span class="token punctuation">,</span> <span class="token string">'public'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+  <span class="token function-variable function">setHeaders</span><span class="token operator">:</span> <span class="token punctuation">(</span>res<span class="token punctuation">,</span> path<span class="token punctuation">,</span> stat<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// res.setHeader(</span>
+    <span class="token comment">//   'Expires',</span>
+    <span class="token comment">//   dayjs('2022-08-20 13:00:15').add(15, 'seconds').toDate(),</span>
+    <span class="token comment">// );</span>
+    <span class="token comment">// res.setHeader('Cache-Control', 'private');</span>
+    <span class="token comment">// res.setHeader('Last-Modified', dayjs('2022-08-19 19:38:15').toDate());</span>
+    res<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'Date'</span><span class="token punctuation">,</span> <span class="token function">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  lastModified<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  <span class="token comment">// etag: false,</span>
+  redirect<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  index<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  maxAge<span class="token operator">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>继续看动画：</p>
+<p><img src="https://to-out-use.oss-cn-hangzhou.aliyuncs.com/common/Kapture%202022-08-19%20at%2021.17.10.gif" alt="Kapture 2022-08-19 at 21.17.10.gif" loading="lazy"></p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/94243716906e447e939142cbce763572~tplv-k3u1fbpfcp-watermark.image" alt="image.png" loading="lazy"></p>
+<p>还是老对话了，客户端缓存过期了，浏览器带着原始 <code>Etag</code> (<code>If-None-Match</code>)去请求服务器，服务器发现 <code>Etag</code> 没变过，说：“浏览器，你可以继续用原来的缓存”，于是，客户端此时拿到的资源还是原来缓存里的。</p>
+<h3 id="Result（结论）"><a href="#Result（结论）" class="headerlink" title="Result（结论）"></a>Result（结论）</h3><h4 id="HTTP-缓存体系"><a href="#HTTP-缓存体系" class="headerlink" title="HTTP 缓存体系"></a>HTTP 缓存体系</h4><p><strong>都看到这里了，剩下的总结就交给读者吧，这里只列举大纲，实际详细的内容上文已经有了。</strong></p>
+<ul>
+<li>存储策略</li>
+<li>过期策略</li>
+<li>对比策略</li>
+</ul>
+<h4 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h4><ul>
+<li><a target="_blank" rel="noopener" href="https://httpwg.org/specs/rfc7234.html#validation.received">Http 规范</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/qOMO0LIdA47j3RjhbCWUEQ">彻底弄懂 Http 缓存机制 - 基于缓存策略三要素分解法</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control">MDN</a></li>
+</ul>
+<hr>
+<p>最后，本次文章的内容到这里就全部结束了，我是<code>不换</code>，浪子回头金不换的那个不换哟～，如果本文对你有所帮助，可以帮忙点个小赞，如果有不对的地方，可以评论帮我斧正。</p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/reward/WechatIMG27808.jpeg"><img loading="lazy" src="https://bigdreamerblog.oss-cn-beijing.aliyuncs.com/dev-blog/reward/WechatIMG27808.jpeg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><span class="icon iconify" data-icon="ri:alipay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>不换</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://dev.bigdreamer.cc/review-http-cache/" title="重温 HTTP 缓存">https://dev.bigdreamer.cc/review-http-cache/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul><script>document.addEventListener('copy', function (event) {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  if (!clipboardData) { return; }
+  const text = window.getSelection().toString();
+  if (text) {
+    event.preventDefault();
+    clipboardData.setData('text/plain', text + '\n\n本文作者：不换\n本文链接：https://dev.bigdreamer.cc/review-http-cache/\n版权声明：本博客所有文章除特别声明外，均默认采用 CC BY-NC-SA 4.0 许可协议。');
+  }
+});</script></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/mind/" rel="prev" title="改变"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">改变</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/precision-react-demystified2-3/" rel="next" title="精读《React技术揭秘》中 卷三"><span class="post-nav-text">精读《React技术揭秘》中 卷三</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div id="waline"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/review-http-cache/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2022 – 2023 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> 不换</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2022-04-10T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#597ef7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><div class="aplayer no-destroy" id="aplayer" data-id="308168565" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay data-theme="#597ef7" data-loop="all" data-order="list" data-preload="auto" data-volume="0.7" data-mutex data-lrctype="0" data-listmaxheight="340px" data-storagename="metingjs"></div><script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"https://cdn.jsdelivr.net/npm/live2d-widget-model-wanko@1.0.5/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":null,"log":false});</script></body></html>
